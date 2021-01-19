@@ -3,6 +3,7 @@ package com.springframework.bootstrap;
 import com.springframework.domain.Category;
 import com.springframework.domain.Ingredient;
 import com.springframework.domain.Recipe;
+import com.springframework.domain.UnitOfMeasure;
 import com.springframework.repositories.CategoryRepository;
 import com.springframework.repositories.IngredientRepository;
 import com.springframework.repositories.RecipeRepository;
@@ -10,7 +11,9 @@ import com.springframework.repositories.UnitOfMeasureRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -38,39 +41,69 @@ public class RecipeBootstrap implements CommandLineRunner {
     }
 
     private void loadData() {
-        Set<Category> tcat = new HashSet<>();
 
         Recipe recipe1 = new Recipe();
         recipe1.setDescription("Guacamole");
-        tcat.add(categoryRepository.findByDescription("Mexican").get());
-        recipe1.setCategories(tcat);
+        recipe1.getCategories().add(getCatfromOpt(categoryRepository.findByDescription("Mexican")));
 
-        Set<Ingredient> ting = new HashSet<>();
-        Ingredient ingr1, ingr2;
-        ingr1 = ingredientRepository.findByDescription("avocado").get();
-        ingr1.setUom(unitOfMeasureRepository.findByDescription("ripe").get());
-        ingr2 = ingredientRepository.findByDescription("salt").get();
-        ingr2.setUom(unitOfMeasureRepository.findByDescription("Teaspoon").get());
+        UnitOfMeasure uom = new UnitOfMeasure();
+        Ingredient ingr1;
 
-        ting.add(ingr1);
-        ting.add(ingr2);
-        //recipe1.setIngredients(ting);
+        ingr1 = getIngfromOpt(ingredientRepository.findByDescription("avocado"));
+        ingr1.setUom(getUomfromOpt(unitOfMeasureRepository.findByDescription("Each")));
+        ingr1.setAmount(new BigDecimal(3));
+        recipe1.getIngredients().add(ingr1);
+        ingr1.setRecipe(recipe1);
+
+        Ingredient ingr2;
+        ingr2 = getIngfromOpt(ingredientRepository.findByDescription("salt"));
+        ingr2.setUom(getUomfromOpt(unitOfMeasureRepository.findByDescription("Teaspoon")));
+        ingr2.setAmount(new BigDecimal(0.5));
+        recipe1.getIngredients().add(ingr2);
+        ingr2.setRecipe(recipe1);
+
         recipeRepository.save(recipe1);
 
-        Recipe recipe2 = new Recipe();
+
+        /*Recipe recipe2 = new Recipe();
         recipe2.setDescription("Chicken Tacos");
-       /* recipe2.getCategories().add(categoryRepository.findByDescription("Mexican").get());
+        recipe2.getCategories().add(categoryRepository.findByDescription("Mexican").get());
 
         ingr1 = ingredientRepository.findByDescription("tomato").get();
         ingr1.setUom(unitOfMeasureRepository.findByDescription("Pinch").get());
-        recipe2.getIngredients().add(ingr1);*/
+        recipe2.getIngredients().add(ingr1);
 
-        recipeRepository.save(recipe2);
+        recipeRepository.save(recipe2);*/
 
 
 
 
 
     }
+
+    private Category getCatfromOpt(Optional<Category> catOpt) {
+        if (catOpt.isPresent()) {
+            return catOpt.get();
+        } else {
+            throw new RuntimeException("Category not found");
+        }
+    }
+
+    private Ingredient getIngfromOpt(Optional<Ingredient> ingrOpt) {
+        if (ingrOpt.isPresent()) {
+            return ingrOpt.get();
+        } else {
+            throw new RuntimeException("Ingredient not found");
+        }
+    }
+
+    private UnitOfMeasure getUomfromOpt(Optional<UnitOfMeasure> uomOpt) {
+        if (uomOpt.isPresent()) {
+            return uomOpt.get();
+        } else {
+            throw new RuntimeException("Unit of measure not found");
+        }
+    }
+
 
 }
