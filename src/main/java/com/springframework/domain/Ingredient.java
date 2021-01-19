@@ -13,7 +13,8 @@ public class Ingredient {
     private String description;
     private BigDecimal amount;
 
-    @OneToOne(fetch = FetchType.EAGER)              //this is default behavior, so explicit indication is just to show that this is possible :)
+    //this is default behavior, so explicit indication is just to show that this is possible :)
+    @OneToOne(fetch = FetchType.EAGER)
     private UnitOfMeasure uom;
 
     @ManyToOne
