@@ -5,15 +5,18 @@ import com.springframework.enums.Difficulty;
 import com.springframework.repositories.CategoryRepository;
 import com.springframework.repositories.RecipeRepository;
 import com.springframework.repositories.UnitOfMeasureRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Component
 public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
@@ -24,14 +27,17 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
     public RecipeBootstrap(RecipeRepository recipeRepository,
                            CategoryRepository categoryRepository,
                            UnitOfMeasureRepository unitOfMeasureRepository) {
+        log.debug("Injecting dependencies (repositories)");
         this.recipeRepository = recipeRepository;
         this.categoryRepository = categoryRepository;
         this.unitOfMeasureRepository = unitOfMeasureRepository;
     }
 
     @Override
+    @Transactional
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         recipeRepository.saveAll(getRecipes());
+        log.debug("Loading Bootstrap data...");
     }
 
     private List<Recipe> getRecipes() {
@@ -135,6 +141,7 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         guacRecipe.getCategories().add(mexicanCat);
 
         recipes.add(guacRecipe);
+        log.debug("Guacamole recipe is ready...");
 
         //Yummy Tacos
         Recipe tacosRecipe = new Recipe();
@@ -200,6 +207,7 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         tacosRecipe.getCategories().add(mexicanCat);
 
         recipes.add(tacosRecipe);
+        log.debug("Tacos receip is ready...");
 
         return recipes;
     }
