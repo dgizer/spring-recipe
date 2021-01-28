@@ -11,7 +11,12 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -36,11 +41,15 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
     @Override
     @Transactional
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        recipeRepository.saveAll(getRecipes());
+        try {
+            recipeRepository.saveAll(getRecipes());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
         log.debug("Loading Bootstrap data...");
     }
 
-    private List<Recipe> getRecipes() {
+    private List<Recipe> getRecipes() throws MalformedURLException {
         List<Recipe> recipes = new ArrayList<>(2);
 
         //get UnitOfMeasures
@@ -110,6 +119,9 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         guacRecipe.setPrepTime(10);
         guacRecipe.setCookTime(0);
         guacRecipe.setDifficulty(Difficulty.EASY);
+        guacRecipe.setServings(4);
+        guacRecipe.setSource("Simply Recipes");
+        guacRecipe.setUrl("https://www.simplyrecipes.com/recipes/perfect_guacamole/");
         guacRecipe.setDirections("1 Cut the avocado, remove flesh: Cut the avocados in half. Remove the pit. Score the inside of the avocado with a blunt knife and scoop out the flesh with a spoon. Place in a bowl.\n" +
                 "2 Mash with a fork: Using a fork, roughly mash the avocado. (Don't overdo it! The guacamole should be a little chunky.)\n" +
                 "3 Add salt, lime juice, and the rest: Sprinkle with salt and lime (or lemon) juice. The acid in the lime juice will provide some balance to the richness of the avocado and will help delay the avocados from turning brown.\n" +
@@ -140,6 +152,8 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         guacRecipe.getCategories().add(americanCat);
         guacRecipe.getCategories().add(mexicanCat);
 
+//        guacRecipe.setImage(prepareImgFromUrl("https://www.simplyrecipes.com/wp-content/uploads/2018/07/Guacamole-LEAD-1-768x1075.jpg"));
+
         recipes.add(guacRecipe);
         log.debug("Guacamole recipe is ready...");
 
@@ -149,6 +163,9 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         tacosRecipe.setPrepTime(30);
         tacosRecipe.setCookTime(0);
         tacosRecipe.setDifficulty(Difficulty.EASY);
+        tacosRecipe.setServings(6);
+        tacosRecipe.setSource("Simply Recipes");
+        tacosRecipe.setUrl("https://www.simplyrecipes.com/recipes/spicy_grilled_chicken_tacos/");
         tacosRecipe.setDirections("1 Prepare a gas or charcoal grill for medium-high, direct heat.\n" +
                 "\n" +
                 "2 Make the marinade and coat the chicken: In a large bowl, stir together the chili powder, oregano, cumin, sugar, salt, garlic and orange zest. Stir in the orange juice and olive oil to make a loose paste. Add the chicken to the bowl and toss to coat all over.\n" +
@@ -206,10 +223,49 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         tacosRecipe.getCategories().add(americanCat);
         tacosRecipe.getCategories().add(mexicanCat);
 
+        //tacosRecipe.setImage(prepareImgFromUrl("https://www.simplyrecipes.com/wp-content/uploads/2017/05/2017-05-29-GrilledChickenTacos-3-768x1075.jpg"));
+
         recipes.add(tacosRecipe);
         log.debug("Tacos receip is ready...");
 
         return recipes;
+    }
+
+    private Byte[] prepareImgFromUrl(String strurl) {
+        Byte[] byteImg = null;
+        URL url = null;
+        try {
+            url = new URL(strurl);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        InputStream is = null;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            is = url.openStream();
+            byte[] byteChunk = new byte[4096];
+            int n;
+            while ((n = is.read(byteChunk)) > 0 ){
+                baos.write(byteChunk,0,n);
+            }
+            byteImg = new Byte[baos.toByteArray().length];
+            for (int i=0; i<byteImg.length; i++)
+                byteImg[i] = baos.toByteArray()[i];
+
+        } catch (IOException e) {
+            System.err.printf("Failed while reading bytes from %s: %s", url.toExternalForm(), e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return byteImg;
     }
 
     private UnitOfMeasure getfromOpt(Optional<UnitOfMeasure> uomOpt){
