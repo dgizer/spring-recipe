@@ -159,8 +159,6 @@ class IngredientControllerTest {
         Long recId = 1L;
         Long id = 2L;
 
-        //RecipeCommand command = new RecipeCommand();
-
         mockMvc.perform(get("/recipe/"+recId+"/ingredient/"+id+"/delete"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/recipe/"+recId+"/ingredients"));

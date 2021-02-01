@@ -5,6 +5,7 @@ import com.springframework.converters.CommandToIngredient;
 import com.springframework.converters.IngredientToCommand;
 import com.springframework.domain.Ingredient;
 import com.springframework.domain.Recipe;
+import com.springframework.repositories.IngredientRepository;
 import com.springframework.repositories.RecipeRepository;
 import com.springframework.repositories.UnitOfMeasureRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -17,15 +18,17 @@ import java.util.Optional;
 @Service
 public class IngredientServiceImpl implements IngredientService {
     private final RecipeRepository recipeRepository;
+    private final IngredientRepository ingredientRepository;
     private final IngredientToCommand ingredientToCommand;
     private final UnitOfMeasureRepository uomRepo;
     private final CommandToIngredient commandToIngredient;
 
     public IngredientServiceImpl(RecipeRepository recipeRepository,
-                                 IngredientToCommand ingredientToCommand,
+                                 IngredientRepository ingredientRepository, IngredientToCommand ingredientToCommand,
                                  UnitOfMeasureRepository uomRepo,
                                  CommandToIngredient commandToIngredient) {
         this.recipeRepository = recipeRepository;
+        this.ingredientRepository = ingredientRepository;
         this.ingredientToCommand = ingredientToCommand;
         this.uomRepo = uomRepo;
         this.commandToIngredient = commandToIngredient;
@@ -82,6 +85,7 @@ public class IngredientServiceImpl implements IngredientService {
             Recipe recipeSaved = recipeRepository.save(recipe);
 
             if (ingrIsNew == true){
+
                 Optional<Ingredient> commandId = recipeSaved.getIngredients().stream()
                         .filter(ingredient -> ingredient.getRecipe().getId().equals(command.getRecipeId()))
                         .filter(ingredient -> ingredient.getDescription().equals(command.getDescription()))
@@ -116,8 +120,8 @@ public class IngredientServiceImpl implements IngredientService {
         if(recipeOpt.isPresent()) {
             recipeOpt.get().getIngredients()
                     .removeIf(ingredient -> ingredient.getId().equals(id));
-
             recipeRepository.save(recipeOpt.get());
+            ingredientRepository.deleteById(id);
         } else {
             log.debug("raise an exception");
         }
