@@ -1,7 +1,6 @@
 package com.springframework.converters;
 
 import com.springframework.commands.UnitOfMeasureCommand;
-import com.springframework.domain.UnitOfMeasure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +27,7 @@ class CommandToUnitOfMeasureTest {
     @Test
     void testEmptyObj() {
         assertNotNull(converter.convert(new UnitOfMeasureCommand()));
-        assertThat(converter.convert(new UnitOfMeasureCommand()),instanceOf(UnitOfMeasure.class));
+        assertThat(converter.convert(new UnitOfMeasureCommand()),instanceOf(com.springframework.domain.UnitOfMeasure.class));
     }
 
     @Test
@@ -39,7 +38,7 @@ class CommandToUnitOfMeasureTest {
         command.setDescription(DESCRIPTION);
 
         //when
-        UnitOfMeasure uom = converter.convert(command);
+        com.springframework.domain.UnitOfMeasure uom = converter.convert(command);
 
         //then
         assertNotNull(uom);

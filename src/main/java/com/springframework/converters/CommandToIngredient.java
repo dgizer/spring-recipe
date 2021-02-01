@@ -28,6 +28,8 @@ public class CommandToIngredient implements Converter<IngredientCommand, Ingredi
         ingredient.setDescription(source.getDescription());
         ingredient.setAmount(source.getAmount());
         ingredient.setUom(converter.convert(source.getUom()));
+        //to figure out if line below is needed
+        //ingredient.getRecipe().setId(source.getRecipeId());
         return ingredient;
     }
 }

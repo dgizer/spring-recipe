@@ -34,7 +34,7 @@ class UnitOfMeasureToCommandTest {
     @Test
     void convert() {
         //given
-        UnitOfMeasure uom = new UnitOfMeasure();
+        UnitOfMeasure uom = new com.springframework.domain.UnitOfMeasure();
         uom.setId(ID);
         uom.setDescription(DESCRIPTION);
 

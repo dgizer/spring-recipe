@@ -1,5 +1,6 @@
 package com.springframework.services;
 
+import com.springframework.commands.RecipeCommand;
 import com.springframework.converters.CommandToRecipe;
 import com.springframework.converters.RecipeToCommand;
 import com.springframework.domain.Recipe;
@@ -19,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class RecipeServiceImplTest {
+class RecipeServiceTest {
 
     private  RecipeService recipeService;
 
@@ -67,5 +68,45 @@ class RecipeServiceImplTest {
 
         verify(recipeRepository, times(1)).findAll();
         verify(recipeRepository, never()).findById(anyLong());
+    }
+
+    @Test
+    void findCommandById() {
+        Long id = 2L;
+
+        Recipe recipe = new Recipe();
+        recipe.setId(id);
+        Optional<Recipe> recipeOpt = Optional.of(recipe);
+
+        when(recipeRepository.findById(anyLong())).thenReturn(recipeOpt);
+
+        assertNotNull(recipeRepository.findById(id));
+        verify(recipeRepository).findById(anyLong());
+
+        RecipeCommand command = new RecipeCommand();
+        command.setId(id);
+
+        when(recipeToCommand.convert(any())).thenReturn(command);
+
+        RecipeCommand findRec = recipeService.findCommandById(id);
+
+        assertNotNull(findRec,"Null is returned");
+        verify(recipeToCommand).convert(any());
+    }
+
+    @Test
+    void deleteById() {
+        //given
+        Long id = 5L;
+        Recipe testRecipe = new Recipe();
+        testRecipe.setId(id);
+        recipeRepository.save(testRecipe);
+
+        //when
+        recipeService.deleteById(id);
+
+        //then
+        verify(recipeRepository).deleteById(anyLong());
+
     }
 }

@@ -2,6 +2,7 @@ package com.springframework.converters;
 
 import com.springframework.commands.IngredientCommand;
 import com.springframework.domain.Ingredient;
+import com.springframework.domain.Recipe;
 import com.springframework.domain.UnitOfMeasure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,8 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.*;
 
 class IngredientToCommandTest {
+    public static Recipe recipe = new Recipe();
+    public static final Long RECIPE_ID = 4L;
     public static final Long ID = 1L;
     public static final String DESCRIPTION = "Description";
     public static final BigDecimal AMOUNT = BigDecimal.valueOf(10);
@@ -40,6 +43,7 @@ class IngredientToCommandTest {
     @Test
     void convert() {
         //given
+        recipe.setId(RECIPE_ID);
         Ingredient ingredient = new Ingredient();
         ingredient.setId(ID);
         ingredient.setDescription(DESCRIPTION);
@@ -47,6 +51,7 @@ class IngredientToCommandTest {
         UnitOfMeasure uom  = new UnitOfMeasure();
         uom.setId(UOM_ID);
         ingredient.setUom(uom);
+        ingredient.setRecipe(recipe);
 
         //when
         IngredientCommand command = converter.convert(ingredient);
@@ -54,6 +59,7 @@ class IngredientToCommandTest {
         //then
         assertNotNull(command);
         assertNotNull(command.getUom());
+        assertEquals(RECIPE_ID,command.getRecipeId());
         assertEquals(ID, command.getId());
         assertEquals(DESCRIPTION, command.getDescription());
         assertEquals(AMOUNT, command.getAmount());
