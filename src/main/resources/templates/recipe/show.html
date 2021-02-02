@@ -31,8 +31,8 @@
                             <h1 class="card-title text-white" th:text="${recipe.description}">Recipe Description Here!</h1>
                         </div>
                         <div class="col-md-2">
-                            <a class="btn btn-primary btn-light" href="#"
-                               th:href="@{'/recipe/' + ${recipe.id} + '/image'}" role="button">Change image</a>
+                            <a class="btn btn-primary btn-light btn-sm" href="#"
+                               th:href="@{'/recipe/' + ${recipe.id} + '/image'}" role="button"><i class="bi bi-file-image"></i>Change image</a>
                         </div>
                         <div class="col-md-1">
                             <a class="btn btn-secondary btn-sm" th:href="@{'/recipe/' + ${recipe.id} + '/update'}" role="button"><i class="bi bi-pencil-fill"></i></a>

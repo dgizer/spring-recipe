@@ -7,6 +7,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Controller
@@ -20,9 +23,15 @@ public class ImageController {
     }
 
     @GetMapping("/recipe/{recipeId}/image")
-    public String getImage(@PathVariable String recipeId, Model model){
+    public String getImageForm(@PathVariable String recipeId, Model model){
         model.addAttribute("recipe", recipeService.findCommandById(Long.valueOf(recipeId)));
-        log.debug("fund recipe id" + recipeId);
-        return "recipe/show";
+        log.debug("found recipe id" + recipeId);
+        return "recipe/imageuploadform";
+    }
+
+    @PostMapping("/recipe/{recipeId}/image")
+    public String uploadImage(@PathVariable String recipeId, @RequestParam("imagefile") MultipartFile file) {
+        imageService.saveImage(Long.valueOf(recipeId), file);
+        return "redirect:/recipe/"+recipeId+"/show";
     }
 }

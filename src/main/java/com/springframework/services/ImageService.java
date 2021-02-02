@@ -1,5 +1,7 @@
 package com.springframework.services;
 
-public interface ImageService {
+import org.springframework.web.multipart.MultipartFile;
 
+public interface ImageService {
+    void saveImage(Long id, MultipartFile file);
 }
