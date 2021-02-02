@@ -110,6 +110,7 @@ public class IngredientServiceImpl implements IngredientService {
         }
         return null;
     }    //todo test saveIngredient() by integration test for testing properly the id assignment to new ingredient
+         //todo add test for existing ingredient
 
 
     @Override

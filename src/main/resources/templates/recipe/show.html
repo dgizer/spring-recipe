@@ -27,10 +27,13 @@
             <div class="card border-primary mt-3">
                 <div class="card-header bg-primary bg-gradient">
                     <div class="row">
-                        <div class="col-md-11">
+                        <div class="col-md-9">
                             <h1 class="card-title text-white" th:text="${recipe.description}">Recipe Description Here!</h1>
                         </div>
-    <!--                    <img class="card-img-top" th:src="@{${'image/recipe' + recipe.getId()}}">-->
+                        <div class="col-md-2">
+                            <a class="btn btn-primary btn-light" href="#"
+                               th:href="@{'/recipe/' + ${recipe.id} + '/image'}" role="button">Change image</a>
+                        </div>
                         <div class="col-md-1">
                             <a class="btn btn-secondary btn-sm" th:href="@{'/recipe/' + ${recipe.id} + '/update'}" role="button"><i class="bi bi-pencil-fill"></i></a>
                         </div>
@@ -38,15 +41,20 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <h5>Categories:</h5>
                         </div>
-                        <div class="col-md-9">
+                        <div class="col-md-4">
                             <ul>
                                 <li th:remove="all">Categ one</li>
                                 <li th:remove="all">Categ two</li>
                                 <li th:each="category : ${recipe.getCategories()}" th:text="${category.description}">Categ three</li>
                             </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <img src="../../static/images/guacamole400x400X.jpg"
+                                 th:src="@{/images/guacamole400x400X.jpg}"
+                                 width="200" height="200">
                         </div>
                     </div>
                     <div class="row">
