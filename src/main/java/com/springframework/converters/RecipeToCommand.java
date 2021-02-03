@@ -44,6 +44,7 @@ public class RecipeToCommand implements Converter<Recipe, RecipeCommand> {
                 .map(ingrConverter::convert)
                 .collect(Collectors.toSet())
         );
+        command.setImage(source.getImage());
         command.setDifficulty(source.getDifficulty());
         command.setNotes(notesConverter.convert(source.getNotes()));
         command.setCategories(source.getCategories()

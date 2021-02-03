@@ -8,17 +8,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class ImageControllerTest {
@@ -67,5 +66,33 @@ class ImageControllerTest {
                 .andExpect(header().string("Location","/recipe/1/show"));
 
         verify(imageService).saveImage(anyLong(),any());
+    }
+
+    @Test
+    void renderImageFromDB() throws Exception {
+        //given
+        Long id = 1L;
+        RecipeCommand command = new RecipeCommand();
+        command.setId(id);
+
+        String image = "some text to have bytes for testing image";
+        Byte[] byteimg = new Byte[image.getBytes().length];
+        for (int i=0; i<byteimg.length; i++)
+            byteimg[i] = image.getBytes()[i];
+
+        command.setImage(byteimg);
+
+        when(recipeService.findCommandById(anyLong())).thenReturn(command);
+
+        //when
+        MockHttpServletResponse response = mockMvc.perform(get("/recipe/1/recipeimage"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
+
+        byte[] responseBytes = response.getContentAsByteArray();
+        verify(recipeService).findCommandById(anyLong());
+        assertEquals(responseBytes.length, command.getImage().length);
+
+
     }
 }
