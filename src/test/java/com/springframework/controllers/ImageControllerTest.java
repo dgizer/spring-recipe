@@ -92,7 +92,5 @@ class ImageControllerTest {
         byte[] responseBytes = response.getContentAsByteArray();
         verify(recipeService).findCommandById(anyLong());
         assertEquals(responseBytes.length, command.getImage().length);
-
-
     }
 }

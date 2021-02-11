@@ -126,7 +126,6 @@ public class IngredientServiceImpl implements IngredientService {
         } else {
             log.debug("raise an exception");
         }
-
     }
 }
 
